@@ -14,10 +14,14 @@ RUN apt-get install -y -q libx11-dev libxpm-dev libxft-dev libxext-dev libncurse
 RUN apt-get install -y -q cmake tcsh build-essential g++ git wget gzip perl unzip
 RUN add-apt-repository -y ppa:webupd8team/java    
 RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-RUN apt-get update 
+
+RUN apt-get update
+RUN apt-get -y upgrade
 RUN apt-get install -y -q oracle-java8-installer
 RUN apt-get install -y -q oracle-java8-set-default 
-RUN apt-get install -y -q openjdk-8-jdk openjdk-8-jre
+RUN apt-get install -y -q default-jdk 
+RUN apt-get install -y -q openjdk-8-jdk 
+RUN apt-get install -y -q openjdk-8-jre
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-oracle
 ENV CLASSPATH=/usr/lib/jvm/java-8-oracle/bin
@@ -28,8 +32,6 @@ RUN apt update
 RUN DEBIAN_FRONTEND=noninteractive apt install -y r-base
 RUN R --version
 
-RUN apt-get update
-RUN apt-get -y upgrade
 RUN apt-get install -y -q vim samtools
 RUN apt-get install -y -q tophat
 
@@ -38,7 +40,10 @@ RUN apt-get -y update
 RUN apt-get -y install mysql-client 
 
 # CPAN
-RUN apt-get install -y bioperl
+RUN apt -y update 
+RUN apt -y upgrade
+RUN apt -y clean
+#RUN apt install -y libmodule-install-perl bioperl --fix-missing
 RUN perl -MCPAN -e 'install Bio::SeqIO'
 RUN perl -MCPAN -e 'install Bio::DB::GenBank'
 RUN perl -MCPAN -e 'install Bio::DB::Failover'
@@ -48,8 +53,8 @@ RUN perl -MCPAN -e 'install DBD::mysql'
 WORKDIR /
 RUN mkdir modules && \ 
  cd modules && \ 
- wget http://search.cpan.org/CPAN/authors/id/C/CJ/CJFIELDS/Bio-EUtilities-1.72.tar.gz && \
- tar -xvzf Bio-EUtilities-1.72.tar.gz && cd Bio-EUtilities-1.72 && perl Build.PL && ./Build && \
+ wget http://search.cpan.org/CPAN/authors/id/C/CJ/CJFIELDS/Bio-EUtilities-1.75.tar.gz && \
+ tar -xvzf Bio-EUtilities-1.75.tar.gz && cd Bio-EUtilities-1.75 && perl Makefile.PL && make && \
  perl -MCPAN -e 'force install Bio::DB::EUtilities'
 
 RUN apt -y update 
